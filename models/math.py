@@ -2,4 +2,4 @@ def add(a:int,b:int) -> int:
     return a+b
 
 if __name__ == "__main__":
-    print(add(5,8))
+    print(add(7,7))
