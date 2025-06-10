@@ -1,16 +1,34 @@
-# This is a sample Python script.
+import sqlite3
+# подключение к базе данных(если отсутствует, то будет создана)
+connection = sqlite3.connect("mydatabase.db")
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# создаем курсор в базе данных для формирования запросов
+cursor = connection.cursor()
 
+# создание таблицы Users.
+#INTEGER: Целые числа
+#TEXT: Текстовые данные
+#REAL: Числа с плавающей запятой
+#BLOB: Двоичные данные
+#NOT NULL: Чтобы небыл пустым
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS Users (
+id INTEGER PRIMARY KEY,
+username TEXT NOT NULL,
+email TEXT NOT NULL,
+age INTEGER
+)
+''')
+# индекс для столбца email
+#cursor.execute('CREATE INDEX idx_email ON Users (email)')
 
+# обновление данных
+cursor.execute('UPDATE Users SET age = ? WHERE username = ?', (29, 'newuser'))
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+# добавление данных
+# cursor.execute('INSERT INTO Users (username, email, age) VALUES (?, ?, ?)', ('newuser', 'newuser@example.com', 28))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# сохраняем и закрываем соединение
+connection.commit()
+connection.close()
