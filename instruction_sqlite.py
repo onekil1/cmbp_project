@@ -10,7 +10,7 @@ cursor = connection.cursor()
 #TEXT: Текстовые данные
 #REAL: Числа с плавающей запятой
 #BLOB: Двоичные данные
-#NOT NULL: Чтобы небыл пустым
+#NOT NULL: Чтобы не был пустым
 
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS Users (
