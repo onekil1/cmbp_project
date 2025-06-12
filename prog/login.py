@@ -44,7 +44,7 @@ def reg_button():
             else:
                 return st.error(auth_inst)
 
-st.image()
+
 col1, col2 = st.sidebar.columns(2)
 with col1:
     if st.button("Регистрация"):
