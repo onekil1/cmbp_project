@@ -1,13 +1,30 @@
 import streamlit as st
+from streamlit.runtime.credentials import check_credentials
 
 import auth_func
 
-for key in ["reg_bar", "log_bar"]:
+for key in ["reg_bar", "log_bar", "info_user"]:
     if key not in st.session_state:
         st.session_state[key] = False
+
 def log_button():
     with st.sidebar.form("Log_form", clear_on_submit=True):
         st.subheader("Форма входа в систему")
+        login = st.text_input("Введите имя учетной записи", placeholder="cmbp_ivanov")
+        password = st.text_input("Введите пароль", type="password")
+        submit = st.form_submit_button("Войти в систему")
+    if submit:
+        if not all([login, password]):
+            return st.error("Введите свой логин и пароль")
+        else:
+            log_inst = auth_func.auth_user(login, password)
+        if log_inst:
+            st.session_state.info_user = log_inst
+            return True
+        else:
+            st.error("Такого пользователя не существует")
+            return False
+
 def reg_button():
     with st.sidebar.form("reg_form", clear_on_submit=True):
         st.subheader("Форма регистрации")
@@ -27,7 +44,7 @@ def reg_button():
             else:
                 return st.error(auth_inst)
 
-
+st.image()
 col1, col2 = st.sidebar.columns(2)
 with col1:
     if st.button("Регистрация"):
@@ -38,7 +55,8 @@ with col2:
         st.session_state.log_bar = not st.session_state.log_bar
         st.session_state.reg_bar = False
 
-if st.session_state.reg_bar:
-    reg_button()
-if st.session_state.log_bar:
-    log_button()
+if st.session_state.info_user is False:
+    if st.session_state.reg_bar:
+        reg_button()
+    if st.session_state.log_bar:
+        log_button()
