@@ -36,5 +36,20 @@ def reg_user(work_name, full_name, login, password, password_check):
     finally:
         connection.close()
 
+def auth_user(login, password):
+    connection = sqlite3.connect(r"C:\Users\onekil1\Coding\git_project\db\log=pass.db")
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM auth WHERE login = ? AND password = ?', (login, password))
+    result_search = cursor.fetchone()
+    if result_search is not None:
+        db_password = result_search[4]
+    else:
+        return "Учетной записи с таким именем учетной записи не существует"
+    if db_password != password:
+        return "Неверный логин или пароль"
+    else:
+        return result_search
+
+
 if __name__ == "__main__":
-    print(reg_user("ЦМБП", "Басов Р.С.", "admin", "adminadmin", "adminadmin"))
+    print(auth_user("admin", "adminadmin"))
