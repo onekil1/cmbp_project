@@ -16,8 +16,8 @@ def _verify_password(stored_password, input_password):
     return new_key == stored_key
 
 def _auth_user(login, password):
-    with sqlite3.connect("db/log=pass.db") as connection:
-        cursor = connection.cursor()
+    with sqlite3.connect(r"C:\Users\onekil1\Coding\git_project\db\log=pass.db") as db:
+        cursor = db.cursor()
         cursor.execute('SELECT * FROM auth WHERE login = ?', (login,))
         result_search = cursor.fetchone()
         if result_search is None:
@@ -32,17 +32,17 @@ def _reg_user(work_name, full_name, login, password, password_check):
     if len(password) < 8:
         return False, "Ошибка: Длинна пароля должна быть больше 8"
     hashed_password = _hash_password(password)
-    connection = sqlite3.connect(r"db/log=pass.db")
-    cursor = connection.cursor()
+    db = sqlite3.connect(r"db/log=pass.db")
+    cursor = db.cursor()
     try:
         cursor.execute('INSERT INTO auth (work_name, full_name, login, password) VALUES (?,?,?,?)', (work_name, full_name, login, hashed_password))
-        connection.commit()
+        db.commit()
         return True, "Регистрация прошла успешно!"
     except sqlite3.IntegrityError:
-        connection.rollback()
+        db.rollback()
         return False, "Ошибка базы данных sqllite3"
     finally:
-        connection.close()
+        db.close()
 
 def reg_button():
     with st.sidebar.form("win", clear_on_submit=True):
@@ -110,14 +110,13 @@ def reg_log_interface():
 def navigation():
     reg_log_interface()
     if st.session_state.info_user:
-        st.switch_page("pages/ℹ️Information.py")
+        st.switch_page("pages/ℹ️Profile.py")
     else:
         return False
 
-if __name__ == "__main__":
-    for key in ["info_user","active_form"]:
-        if key not in st.session_state:
-            st.session_state[key] = None
+for key in ["info_user","active_form", "update"]:
+    if key not in st.session_state:
+        st.session_state[key] = None
 
-    st.set_page_config(page_title="Авторизация", layout="wide")
-    navigation()
+st.set_page_config(page_title="Авторизация", layout="wide")
+navigation()
