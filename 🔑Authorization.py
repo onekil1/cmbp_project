@@ -112,17 +112,13 @@ def navigation():
     reg_log_interface()
     if st.session_state.info_user:
         st.switch_page("pages/ℹ️Information.py")
-    else:
-        return False
+    if st.session_state.info_user is None:
+        st.switch_page("🔑Authorization.py")
 
-for key in ["info_user","active_form"]:
-    if key not in st.session_state:
-        st.session_state[key] = None
+if __name__ == "__main__":
+    for key in ["info_user","active_form"]:
+        if key not in st.session_state:
+            st.session_state[key] = None
 
-st.set_page_config(page_title="Авторизация", layout="wide")
-navigation()
-
-
-# if __name__ == "__main__":
-#     reg_log_interface()
-    # print(_auth_user("admin","adminadmin"))
+    st.set_page_config(page_title="Авторизация", layout="wide")
+    navigation()
