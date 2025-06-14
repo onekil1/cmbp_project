@@ -112,8 +112,8 @@ def navigation():
     reg_log_interface()
     if st.session_state.info_user:
         st.switch_page("pages/ℹ️Information.py")
-    if st.session_state.info_user is None:
-        st.switch_page("🔑Authorization.py")
+    else:
+        return False
 
 if __name__ == "__main__":
     for key in ["info_user","active_form"]:
