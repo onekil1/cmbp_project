@@ -2,7 +2,6 @@ import streamlit as st
 import sqlite3
 import hashlib
 import os
-import time
 
 def _hash_password(password, salt=None):
     if salt is None:
