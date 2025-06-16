@@ -36,15 +36,21 @@ def add_task_button():
             else:
                 return False, "Все поля должны быть заполнены"
 
-def _check_tasks(full_name):
+def _check_tasks(needed, full_name):
     db = sqlite3.connect(r"C:\Users\onekil1\Coding\git_project\db\log=pass.db")
     cursor = db.cursor()
     cursor.execute("PRAGMA foreign_keys = ON")
     try:
-        query = """SELECT COUNT(*) FROM plan WHERE responsible = ?"""
-        cursor.execute(query, (full_name,))
-        count = cursor.fetchone()[0]
-        return True, count
+        if needed == "0":
+            query = """SELECT COUNT(*) FROM plan WHERE responsible = ?"""
+            cursor.execute(query, (full_name,))
+            count = cursor.fetchone()[0]
+            return True, count
+        if needed == "1":
+            query = """SELECT * FROM plan WHERE responsible = ?"""
+            cursor.execute(query, (full_name,))
+            count = cursor.fetchall()
+            return True, count
     except sqlite3.IntegrityError:
         db.rollback()
         return False, "Ошибка базы данных sqllite3"
@@ -56,7 +62,7 @@ def info_interface():
     name = user_info[2].split(" ", 2)
     split_name = name[1] + " " + name[2]
     st.title(f"{split_name}, добро пожаловать!")
-    task_info = _check_tasks(user_info[2])
+    task_info = _check_tasks("0",user_info[2])
     with st.sidebar.container():
         st.markdown("""
         <style>
@@ -81,20 +87,6 @@ def info_interface():
         """ % (user_info[2], user_info[1], task_info[1]),
                     unsafe_allow_html=True)
 
-        st.markdown("""
-        <style>
-            div.stButton > button:first-child {
-                background-color: #1c232e;
-                color: white;
-                padding: 3px 10px;
-                margin: 0px;
-            }
-            div.stButton > button:first-child:hover {
-                background-color: #45a049;
-            }
-        </style>
-        """, unsafe_allow_html=True)
-
     col1, col2 = st.sidebar.columns(2)
     with col1:
         if st.button("Добавить проект", key="unique_btn_add_prjct"):
@@ -108,18 +100,39 @@ def info_interface():
                 st.session_state.update = True
                 st.write(add_task_result)
     with col2:
-        if st.button("Внести корректировки"):
-            st.session_state.active_form = "correct_project"
+        if st.button("Посмотреть свои проекты"):
+            st.session_state.active_form = "list_project"
             st.rerun()
-    if st.session_state.active_form == "correct_project":
-        pass
-
+    if st.session_state.active_form == "list_project":
+        with st.container():
+            st.header("Просмотр своих задач")
+            task_list = _check_tasks("1", user_info[2])
+            if task_list:
+                list = task_list[1]
+                st.session_state.update = True
+                pd.set_option('display.max_colwidth', 1)
+                df = pd.DataFrame(list, columns=[
+                    "№","Проект","На основании","На контроле","Начало","Окончание","Ответственный"])
+                st.markdown("""
+                <style>
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                table td, table th {
+                    word-wrap: break-word;
+                }
+                table tr:nth-child(even)
+                </style>
+                """, unsafe_allow_html=True)
+                st.table(df.set_index("№"))
 
 def navigation():
     if st.session_state.info_user:
         info_interface()
     else:
         st.switch_page("🔑Authorization.py")
+
 
 st.set_page_config(page_title="Профиль пользователя", layout="wide")
 if st.session_state.update is True:
