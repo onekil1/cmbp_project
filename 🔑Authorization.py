@@ -110,7 +110,7 @@ def reg_log_interface():
 def navigation():
     reg_log_interface()
     if st.session_state.info_user:
-        st.switch_page("pages/ℹ️Profile.py")
+        st.switch_page("pages/1_ℹ️Profile.py")
     else:
         return False
 
